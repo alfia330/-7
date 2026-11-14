@@ -1,31 +1,25 @@
 ﻿using System;
 
-class BankAccount
+class Song
 {
-    public decimal Balance;
-    public string Number;
+    string name;
+    string author;
+    Song prev;
 
-    public BankAccount(string number, decimal balance)
+    public void SetName(string n) { name = n; }
+    public void SetAuthor(string a) { author = a; }
+    public void SetPrev(Song p) { prev = p; }
+
+    public string Title()
     {
-        Number = number;
-        Balance = balance;
+        return name + " — " + author;
     }
 
-    public void Transfer(BankAccount from, decimal amount)
+    public override bool Equals(object d)
     {
-        if (from == null || amount <= 0)
-        {
-            Console.WriteLine("Некорректные данные перевода");
-            return;
-        }
-        if (from.Balance < amount)
-        {
-            Console.WriteLine("Недостаточно средств");
-            return;
-        }
-        from.Balance -= amount;
-        this.Balance += amount;
-        Console.WriteLine($"Переведено {amount} со счёта {from.Number} на {this.Number}");
+        if (d is Song other)
+            return this.name == other.name && this.author == other.author;
+        return false;
     }
 }
 
@@ -33,14 +27,25 @@ class Program
 {
     static void Main()
     {
-        BankAccount a = new BankAccount("111", 1000);
-        BankAccount b = new BankAccount("222", 500);
+        Song[] songs = new Song[4];
+        for (int i = 0; i < 4; i++)
+        {
+            songs[i] = new Song();
+            songs[i].SetName("Песня " + (i + 1));
+            songs[i].SetAuthor("Автор " + (i + 1));
+            if (i > 0) songs[i].SetPrev(songs[i - 1]);
+        }
 
-        b.Transfer(a, 300);     
-        b.Transfer(a, -100);    
-        b.Transfer(null, 50); 
-        b.Transfer(a, 10000);  
+        Console.WriteLine("Список песен:");
+        foreach (Song s in songs)
+            Console.WriteLine(s.Title());
 
-        Console.WriteLine($"A = {a.Balance}, B = {b.Balance}");
+        Console.WriteLine("\nСравнение первой и второй: " + songs[0].Equals(songs[1]));
+
+        
+        Song copy = new Song();
+        copy.SetName("Песня 1");
+        copy.SetAuthor("Автор 1");
+        Console.WriteLine("Первая == копия первой: " + songs[0].Equals(copy));
     }
 }
